@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/e30f2efa-f265-4371-9222-5ab5494b0413
+
 # Setpiece
 
 Setpiece is an experiment in using a large language model to pick football player props: over/under lines on stats such as total shots, shots on target, passes attempted and tackles, plus match totals for corners and bookings. It builds a prompt from player statistics stored in Postgres, asks Claude for picks with a confidence score and written reasoning, publishes them on a website, and grades them automatically after the match.
