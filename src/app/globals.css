@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Tactics-board palette */
+    --board:        #0b0e0c;   /* page background — pitch black-green */
+    --board-deep:   #070a08;   /* nav / footer */
+    --panel:        #121714;   /* card surface */
+    --panel-high:   #171d18;   /* raised surface */
+    --chalk:        #f2f5f0;   /* primary text */
+    --chalk-dim:    #a7b3a9;   /* secondary text */
+    --chalk-faint:  #76837a;   /* meta text */
+    --chalk-ghost:  #4d5850;   /* disabled / hairline text */
+    --grass:        #55c878;   /* single accent */
+    --grass-deep:   #46b167;
+    --loss:         #e0574f;
+    --early:        #d9a13f;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--board);
+    color: var(--chalk);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Numbers always align in data rows */
+  .font-mono,
+  [class*="font-data"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--board-deep); }
+  ::-webkit-scrollbar-thumb { background: #232b25; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2c352e; }
+
+  ::selection {
+    background-color: rgba(85, 200, 120, 0.28);
+    color: #ffffff;
+  }
+}
+
+@layer utilities {
+  .text-balance  { text-wrap: balance; }
+  .text-pretty   { text-wrap: pretty; }
+
+  .font-display  { font-family: var(--font-display), var(--font-sans), sans-serif; }
+
+  /* ── Entrance reveals ───────────────────────────────── */
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .reveal {
+    opacity: 0;
+    animation: revealUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .reveal.is-visible { opacity: 1; }
+  .reveal-d1 { animation-delay: 60ms; }
+  .reveal-d2 { animation-delay: 130ms; }
+  .reveal-d3 { animation-delay: 200ms; }
+  .reveal-d4 { animation-delay: 270ms; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { animation: none; opacity: 1; }
+  }
+
+  /* ── Chalk trajectory draw-on (hero set-piece diagram) ── */
+  @keyframes chalkDraw {
+    to { stroke-dashoffset: 0; }
+  }
+  .chalk-draw {
+    animation: chalkDraw 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.5s forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .chalk-draw { animation: none; stroke-dashoffset: 0 !important; }
+  }
+
+  /* ── Smooth hover lift ──────────────────────────────── */
+  .hover-lift {
+    transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s cubic-bezier(0.16,1,0.3,1);
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  /* ── Focus ring ─────────────────────────────────────── */
+  :focus-visible {
+    outline: 2px solid rgba(85,200,120,0.65);
+    outline-offset: 2px;
+  }
+
+  /* ── Terminal cursor blink ──────────────────────────── */
+  @keyframes termBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+  .cursor-blink {
+    animation: termBlink 1.1s step-end infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cursor-blink { animation: none; }
+  }
+
+  /* Social proof ticker */
+  @keyframes ticker {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-ticker {
+    animation: ticker 38s linear infinite;
+  }
+  .animate-ticker:hover { animation-play-state: paused; }
+
+  /* Count-up number reveal */
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-count-reveal {
+    animation: countUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+
+  /* Subtle vertical scroll cue */
+  @keyframes scrollCue {
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50%       { opacity: 0.8; transform: translateY(4px); }
+  }
+  .animate-scroll-cue {
+    animation: scrollCue 2s ease-in-out infinite;
+  }
+
+  /* Perspective pitch grid */
+  .perspective-grid { perspective: 1000px; }
+  .grid-plane {
+    transform: rotateX(70deg);
+    transform-origin: bottom;
+  }
+
+  /* Ball glow */
+  .ball-pulse { box-shadow: 0 0 15px 4px rgba(85, 200, 120, 0.6); }
+
+  /* Kick animation helpers */
+  .kicker-anim { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .ball-anim   { transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+
+  /* Slide-up-fade stagger helpers */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+
+  /* Segmented progress bar */
+  .progress-segment {
+    height: 4px;
+    flex-grow: 1;
+    background-color: #2b342d;
+  }
+  .progress-segment.active {
+    background-color: #55c878;
+  }
+  .progress-segment.active-red {
+    background-color: #e0574f;
+  }
+
+  /* Glass panel — base */
+  .glass-panel {
+    background: rgba(13, 17, 14, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Glass card — pick cards / content on stadium bg */
+  .glass-card {
+    background: rgba(16, 21, 17, 0.78);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow:
+      0 4px 28px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition: background 200ms, border-color 200ms;
+  }
+  .glass-card:hover {
+    background: rgba(19, 25, 20, 0.86);
+    border-color: rgba(85, 200, 120, 0.2);
+  }
+
+  /* Stronger glass for navbar / header bars */
+  .glass-strong {
+    background: rgba(7, 10, 8, 0.85);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* Content section wrapper — adds a subtle tint to page containers */
+  .glass-section {
+    background: rgba(7, 10, 8, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}

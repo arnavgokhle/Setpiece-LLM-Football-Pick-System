@@ -1,0 +1,44 @@
+name: Setpiece Daily Cron
+
+# The pipeline driver. Runs every 30 minutes; each stage self-gates on
+# time, so a tick that has nothing to do is a cheap no-op.
+#
+# Deployment is Render, so Vercel Cron never fires — this workflow is the
+# ONLY scheduler. Anything that needs to run on a schedule must be a step
+# here or a job inside /api/cron/daily.
+
+on:
+  schedule:
+    - cron: '0,30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  run-cron:
+    runs-on: ubuntu-latest
+    steps:
+      # Jobs 0-3: generate early picks, matchday email, welcome mails,
+      # auto-grade finished matches.
+      - name: Daily jobs
+        timeout-minutes: 10
+        run: |
+          curl -s -L -X GET \
+            --max-time 540 \
+            --retry 2 \
+            --retry-delay 30 \
+            "https://www.setpiecepicks.com/api/cron/daily" \
+            -H "Authorization: Bearer ${{ secrets.FINALIZE_SECRET }}"
+
+      # Stage B: promote early picks to final ~4h before kickoff, using
+      # Tavily lineup/injury intel. Runs after the daily jobs so picks
+      # generated this tick are eligible on the next one.
+      # Separate step because finalization makes its own Claude calls and
+      # must not be starved by the daily jobs' 5-minute budget.
+      - name: Finalize picks
+        timeout-minutes: 10
+        run: |
+          curl -s -L -X POST \
+            --max-time 540 \
+            --retry 2 \
+            --retry-delay 30 \
+            "https://www.setpiecepicks.com/api/picks/finalize" \
+            -H "Authorization: Bearer ${{ secrets.FINALIZE_SECRET }}"

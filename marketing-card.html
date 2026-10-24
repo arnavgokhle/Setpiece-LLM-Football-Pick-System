@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setpiece — Jonathan David Pick</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d1117;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    /* ── Branding header ── */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .brand-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #00e87a;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .brand-name {
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: #eef2ff;
+      letter-spacing: -0.5px;
+    }
+    .brand-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── Card wrapper ── */
+    .card-wrap {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    /* ── Pick card ── */
+    .pick-card {
+      background: #0a0f1e;
+      border: 1px solid rgba(0, 232, 122, 0.25);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-top-line {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, #00e87a 40%, transparent 100%);
+    }
+
+    .card-body { padding: 16px; }
+
+    /* ── Player header ── */
+    .player-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .player-info { min-width: 0; flex: 1; }
+    .player-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 2px;
+    }
+    .player-name {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      color: #eef2ff;
+      line-height: 1.2;
+    }
+    .top-pick-badge {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: rgba(0, 232, 122, 0.10);
+      border: 1px solid rgba(0, 232, 122, 0.25);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #00e87a;
+    }
+    .top-pick-badge svg { width: 9px; height: 9px; }
+    .player-team {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #38bdf8;
+      margin-bottom: 4px;
+    }
+    .player-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stage-badge {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: #38bdf8;
+    }
+    .stage-badge svg { width: 9px; height: 9px; }
+    .kickoff-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: rgba(56, 189, 248, 0.6);
+    }
+    .match-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: #3d5070;
+    }
+
+    /* Direction badge */
+    .direction-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .direction-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 3px;
+      background: rgba(0, 232, 122, 0.12);
+      color: #00e87a;
+    }
+    .confidence-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #00e87a;
+    }
+
+    /* ── Stat line ── */
+    .stat-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 12px 0;
+      margin-bottom: 12px;
+      border-top: 1px solid rgba(99, 133, 255, 0.08);
+      border-bottom: 1px solid rgba(99, 133, 255, 0.08);
+    }
+    .stat-left {}
+    .stat-category {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #38bdf8;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .stat-line-number {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      color: #eef2ff;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .form-right { text-align: right; }
+    .form-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #3d5070;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .form-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: #eef2ff;
+      line-height: 1;
+    }
+    .form-denom {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #3d5070;
+    }
+    .form-hits {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #00e87a;
+      margin-top: 2px;
+    }
+
+    /* ── Short reasoning ── */
+    .short-reasoning {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #7a90b8;
+      margin-bottom: 14px;
+    }
+
+    /* ── Analysis section ── */
+    .analysis-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #00e87a;
+      margin-bottom: 8px;
+    }
+    .analysis-label svg { width: 11px; height: 11px; }
+    .analysis-box {
+      background: rgba(0, 232, 122, 0.04);
+      border: 1px solid rgba(0, 232, 122, 0.12);
+      border-radius: 3px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+    .analysis-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .analysis-header svg { width: 11px; height: 11px; color: #00e87a; }
+    .analysis-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #00e87a;
+    }
+    .analysis-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #7a90b8;
+    }
+
+    /* ── Stats section ── */
+    .stats-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #3d5070;
+      margin-bottom: 12px;
+    }
+    .stats-label svg { width: 10px; height: 10px; }
+
+    /* Last 5 */
+    .last5-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #38bdf8;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .last5-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .form-cell {
+      flex: 1;
+      border-radius: 3px;
+      padding: 6px 0;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+    .form-cell.hit {
+      background: rgba(0, 232, 122, 0.08);
+      border: 1px solid rgba(0, 232, 122, 0.25);
+      color: #00e87a;
+    }
+    .form-cell.miss {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(99, 133, 255, 0.08);
+      color: #3d5070;
+    }
+
+    /* Key stats grid */
+    .key-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+    .key-stat-cell {
+      background: rgba(99, 133, 255, 0.04);
+      border: 1px solid rgba(99, 133, 255, 0.08);
+      border-radius: 3px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .key-stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #3d5070;
+      display: block;
+      margin-bottom: 3px;
+    }
+    .key-stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #eef2ff;
+    }
+
+    /* ── Footer branding ── */
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+    }
+    .footer-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #3d5070;
+      letter-spacing: 0.05em;
+    }
+    .footer-url span { color: #00e87a; }
+  </style>
+</head>
+<body>
+
+  <!-- Brand header -->
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <div>
+      <div class="brand-name">Setpiece</div>
+      <div class="brand-sub">WC 2026 · AI Pick</div>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card-wrap">
+    <div class="pick-card">
+      <div class="card-top-line"></div>
+      <div class="card-body">
+
+        <!-- Player header -->
+        <div class="player-row">
+          <div class="player-info">
+            <div class="player-name-row">
+              <span class="player-name">Jonathan David</span>
+              <span class="top-pick-badge">
+                <!-- sparkles icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                </svg>
+                Top Pick
+              </span>
+            </div>
+            <div class="player-team">Canada · ST</div>
+            <div class="player-meta">
+              <span class="stage-badge">
+                <!-- clock icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Early
+              </span>
+              <span class="kickoff-time">21:30 IST</span>
+              <span class="match-label">Canada vs Qatar</span>
+            </div>
+          </div>
+
+          <!-- Direction + confidence -->
+          <div class="direction-col">
+            <span class="direction-badge">MORE</span>
+            <span class="confidence-pct">82%</span>
+          </div>
+        </div>
+
+        <!-- Stat line -->
+        <div class="stat-row">
+          <div class="stat-left">
+            <span class="stat-category">Total Shots</span>
+            <span class="stat-line-number">3.5</span>
+          </div>
+          <div class="form-right">
+            <span class="form-label">Form</span>
+            <span class="form-score">91<span class="form-denom">/100</span></span>
+            <div class="form-hits">5/5 last 5</div>
+          </div>
+        </div>
+
+        <!-- Short reasoning -->
+        <p class="short-reasoning">
+          David averages 4.6 shots/90 at Juventus this season and faces a Qatar side conceding 14.2 shots/game — the ideal volume matchup to clear 3.5 comfortably.
+        </p>
+
+        <!-- Full analysis (open) -->
+        <div class="analysis-label">
+          <!-- chevron down -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+          Hide analysis
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00e87a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+            </svg>
+            <span class="analysis-title">Scout Analysis</span>
+          </div>
+          <p class="analysis-text">
+            Jonathan David is the most dangerous striker in this tournament field, averaging 4.6 shots/90 across 26 Serie A goals for Juventus in 2025–26. Qatar concede 14.2 shots/game — the weakest defensive record in Group B — and will invite Canada to attack from the first whistle. David has cleared 3.5 shots in 9 of his last 10 games, peaking at 7 in a recent 4-0 win. With Canada's high press and David operating as a classic centre-forward against a low-block, shot volume will be elevated throughout.
+          </p>
+        </div>
+
+        <!-- Stats (open) -->
+        <div class="stats-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(180deg)">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+          Hide stats
+        </div>
+
+        <!-- Last 5 -->
+        <span class="last5-label">Last 5 matches</span>
+        <div class="last5-row">
+          <div class="form-cell hit">5</div>
+          <div class="form-cell hit">6</div>
+          <div class="form-cell hit">4</div>
+          <div class="form-cell hit">7</div>
+          <div class="form-cell hit">4</div>
+        </div>
+
+        <!-- Key stats -->
+        <div class="key-stats-grid">
+          <div class="key-stat-cell">
+            <span class="key-stat-label">Season Avg</span>
+            <span class="key-stat-value">4.6/90</span>
+          </div>
+          <div class="key-stat-cell">
+            <span class="key-stat-label">Hit Last 10</span>
+            <span class="key-stat-value">9/10</span>
+          </div>
+          <div class="key-stat-cell">
+            <span class="key-stat-label">Goals 24/25</span>
+            <span class="key-stat-value">26</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-url"><span>setpiecepicks.com</span> · WC 2026 Picks</div>
+  </div>
+
+</body>
+</html>
