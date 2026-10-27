@@ -63,7 +63,8 @@ Voided picks (the player didn't play, or no stat source was found) are excluded 
 
 - **Model-generated figures on World Cup picks.** The World Cup prompt asks the model to produce the "last 5" form values and to estimate "hit last 10". Those values were shown on pick cards but are not real match logs. The club-season path replaces them with logged values where they exist.
 - **Unsourced team data.** Team defensive profiles (shots conceded per game, vulnerability ratings) are hand-entered literals in `scripts/seed-*.ts` with no cited source. Pick reasoning quotes them.
-- **Weak player stats.** The club stats came from an FBref scrape of 2024-25. Known problems: passes/90 is 99% null, tackles/90 is under-scaled by about 2.4×, there's no position column, and about 13% of rows have impossible minute totals. The club prompt labels this data "2025-26", which is wrong.
+- **Weak player stats.** The club stats are FBref's Big-5 2025-26 player tables, exported as CSV on 27 May 2026. By then FBref had lost its Opta advanced data (20 Jan 2026), so only basic stats were available. Known problems: passes/90 is 99% null, tackles/90 is under-scaled by about 2.4×, there's no position column, and about 13% of rows have impossible minute totals.
+- **Wrong season labels.** The CSV loader defaults `--season` to "2024-25", so the 2025-26 rows are stored under the tag `season = '2024-25'`. The queries filter on that tag, so the code still says "2024-25" in several places. The World Cup prompt also tells the model the stats are from "the 2024-25 club season", which is wrong. The club prompt's "2025-26" label is correct.
 - **Rules the model only promised to follow.** On the World Cup path, the "7 of last 10" rule, the 20% line buffer and the volume thresholds are prompt instructions only. Nothing in the code checks them.
 - **Grading is model-judged.** Haiku reads search snippets and returns won/lost. The code checks that a number and a quote are present, but it doesn't recompute the result from the number and the line. Grader accuracy has not been measured against an independent source.
 - **Odds edge is not meaningful.** Only shots on target maps to a bookmaker prop market. For every other category the code falls back to the home team's match-win price.
@@ -97,15 +98,15 @@ curl -X POST -H "Authorization: Bearer $FINALIZE_SECRET" http://localhost:3000/a
 
 The FBref data used during development is not redistributed here. Download it yourself from [FBref](https://fbref.com/) and load it with the included parsers. Check FBref's terms of use before you download.
 
-**Club season stats → `player_club_stats`.** The live system used the 2024-25 Big-5 European Leagues tables:
+**Club season stats → `player_club_stats`.** The live system used the 2025-26 Big-5 European Leagues tables, exported on 27 May 2026:
 
-1. Open each of these FBref pages and select the **2024-2025** season:
+1. Open each of these FBref pages and select the **2025-2026** season:
    - [Standard stats](https://fbref.com/en/comps/Big5/stats/players/Big-5-European-Leagues-Stats)
    - [Shooting](https://fbref.com/en/comps/Big5/shooting/players/Big-5-European-Leagues-Stats)
    - [Passing](https://fbref.com/en/comps/Big5/passing/players/Big-5-European-Leagues-Stats)
    - [Defensive actions](https://fbref.com/en/comps/Big5/defense/players/Big-5-European-Leagues-Stats)
 2. On each player table, choose **Share & Export → Get table as CSV**, and save the text as a `.csv` file.
-3. Load the standard table first, because it creates the rows. The others only update columns:
+3. Load the standard table first, because it creates the rows. The others only update columns. Use the `2024-25` tag even though the data is 2025-26, because the stats queries filter on it (see [Known limitations](#known-limitations)):
    ```bash
    npm run parse-fbref-csv -- path/to/standard.csv --season 2024-25
    npm run parse-fbref-csv -- path/to/shooting.csv --season 2024-25
@@ -135,10 +136,9 @@ The known problems with this data are listed under [Known limitations](#known-li
 
 This repository is a single-commit copy of the private development repository at commit `5299216` (2026-09-26), with these changes:
 
-1. **Season label corrected in the club prompt.** In `src/lib/picks-generator.ts`, the club-season prompt described the injected player stats as "2025-26". The database those prompts read from only contained **2024-25** data. Four lines of that prompt (the stats header, two confidence notes, and the data rule) now say 2024-25. The correction was made after the World Cup picks were generated. The World Cup prompt already labelled its data 2024-25 and is unchanged. The club prompt has produced no graded picks. The original text is in commit `5299216` of the private repository.
-2. **Credentials removed.** The scripts in `archive/` contained a hard-coded database URL and service-role key. They now read `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` from the environment. That key has been revoked.
-3. **Admin fallback removed.** `/admin` used to fall back to a hard-coded email address when `ADMIN_EMAIL` was unset. With it unset, nobody has admin access now.
-4. **Removed:** the FBref CSV exports, local AI-tooling configuration, design-tool exports, a test-email script, and the internal working notes. The notes are replaced by `docs/DEVLOG.md`.
+1. **Credentials removed.** The scripts in `archive/` contained a hard-coded database URL and service-role key. They now read `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` from the environment. That key has been revoked.
+2. **Admin fallback removed.** `/admin` used to fall back to a hard-coded email address when `ADMIN_EMAIL` was unset. With it unset, nobody has admin access now.
+3. **Removed:** the FBref CSV exports, local AI-tooling configuration, design-tool exports, a test-email script, and the internal working notes. The notes are replaced by `docs/DEVLOG.md`.
 
 ## License
 

@@ -321,7 +321,7 @@ export async function generateEarlyPicks(
   }
 
   const squadContext = isClubBatch
-    ? `\nSQUAD & REAL 2024-25 CLUB STATS (from FBref — only pick players listed here):\n${clubCoverage!.context}\n`
+    ? `\nSQUAD & REAL 2025-26 CLUB STATS (from FBref — only pick players listed here):\n${clubCoverage!.context}\n`
     : isWcBatch
     ? wcSquadContext || "\n(WC squad data not yet loaded — only pick players you are certain are in this national team; skip if unsure.)\n"
     : squadMap.size > 0
@@ -352,9 +352,9 @@ export async function generateEarlyPicks(
     ? "Confidence range: 60–82 (tournament football — squad rotation and pressure factors are higher)"
     : bestLoggedSample >= MIN_MATCHES_TO_ENFORCE
       ? `Confidence range: 70–${clubCap}. Players with a 2026-27 match log below may be `
-        + `assessed on those real figures; players without one rest on 2024-25 averages `
+        + `assessed on those real figures; players without one rest on 2025-26 averages `
         + `and must stay at or below 78. Do not exceed ${clubCap}.`
-      : "Confidence range: 70–78. This is the opening of a new season: the injected stats are from 2024-25, "
+      : "Confidence range: 70–78. This is the opening of a new season: the injected stats are from 2025-26, "
         + "squads have changed in the summer window, and no 2026-27 sample exists yet. Do not exceed 78.";
 
   const matchList = fixtures
@@ -425,7 +425,7 @@ ${intlFormContext}
 ════════════════════════════════════════════════════════════
 CLUB SEASON DATA RULES — READ BEFORE PICKING
 ════════════════════════════════════════════════════════════
-1. The per-90 numbers above are 2024-25 club-season stats. The 2026-27
+1. The per-90 numbers above are 2025-26 club-season stats. The 2026-27
    season has not produced any data yet. Treat them as a prior, not as
    current form, and never claim a 2026-27 sample you do not have.
 2. Players who changed clubs in the 2026 summer window carry a per-90
